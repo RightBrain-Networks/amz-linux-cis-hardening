@@ -36,8 +36,24 @@ sysctl -w net.ipv4.route.flush=1
 sed -i 's/#MaxAuthTries 6/MaxAuthTries 4/' /etc/ssh/sshd_config
 # 5.2.11 Approved MAC algo
 echo 'macs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com' >> /etc/ssh/sshd_config
-
+# 5.2.3 Log Level
+sed -i 's/#\(LogLevel INFO\)/\1/' /etc/ssh/sshd_config
+# 5.2.2 SSH 2 only explicit
+sed -i 's/#\(Protocol 2\)/\1/' /etc/ssh/sshd_config
 /etc/init.d/sshd reload
+
+# ------------------ Password Settings ---------------------
+# 5.4.1.4 deactivate in active accounts - Set for new accounts not ec2-user
+useradd -D -f 30
+# 5.3.1 PW strenght
+sed -i 's/# \(minlen =\) 9/\1 14/' /etc/security/pwquality.conf
+sed -i 's/# \(dcredit =\) 1/\1 -1/' /etc/security/pwquality.conf
+sed -i 's/# \(ucredit =\) 1/\1 -1/' /etc/security/pwquality.conf
+sed -i 's/# \(ocredit =\) 1/\1 -1/' /etc/security/pwquality.conf
+sed -i 's/# \(lcredit =\) 1/\1 -1/' /etc/security/pwquality.conf
+
+
+
 
 # ------------------ Audit Daemon Config --------------------
 # 4.1.1.2 audit config
@@ -65,10 +81,12 @@ chown root:root /etc/cron.d
 chmod og-rwx /etc/cron.d
 
 # ------------------ File Systems --------------------------
+# 1.1.1.1 No cramfs
+echo 'install cramfs /bin/true' > /etc/modprobe.d/CIS.conf
 # 1.1.1.8 No FAT
-echo 'install vfat /bin/true' > /etc/modprobe.d/CIS.conf
+echo 'install vfat /bin/true' >> /etc/modprobe.d/CIS.conf
 # 1.1.1.4 No hfs
-echo 'install hfs /bin/true' > /etc/modprobe.d/CIS.conf
+echo 'install hfs /bin/true' >> /etc/modprobe.d/CIS.conf
 
 # ------------------ Yum -------------------------
 # 1.2.3 gpg checks
