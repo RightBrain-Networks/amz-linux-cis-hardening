@@ -51,7 +51,10 @@ sed -i 's/# \(dcredit =\) 1/\1 -1/' /etc/security/pwquality.conf
 sed -i 's/# \(ucredit =\) 1/\1 -1/' /etc/security/pwquality.conf
 sed -i 's/# \(ocredit =\) 1/\1 -1/' /etc/security/pwquality.conf
 sed -i 's/# \(lcredit =\) 1/\1 -1/' /etc/security/pwquality.conf
-
+# 5.3.3 PW remember 
+sed -i 's/\(password *sufficient *pam_unix.so.*\)/\1 remember=5/' /etc/pam.d/password-auth-ac
+sed -i 's/\(password *sufficient *pam_unix.so.*\)/\1 remember=5/' /etc/pam.d/system-auth-ac
+/usr/sbin/authconfig --update
 
 
 
@@ -92,7 +95,8 @@ echo 'install hfs /bin/true' >> /etc/modprobe.d/CIS.conf
 # 1.2.3 gpg checks
 sed -i 's/gpgcheck=0/gpgcheck=1/' /etc/yum.repos.d/amzn-nosrc.repo
 
-
+# ------------------ Logs ------------------------
+find /var/log -type f -exec chmod g-wx,o-rwx {} +
 
 # 1.3.1 install and configure AIDE
 yum install -y aide
