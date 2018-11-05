@@ -25,9 +25,23 @@ echo "-e 2" >> /etc/audit/audit.rules
 chown root:root /etc/cron.hourly
 chmod og-rwx /etc/cron.hourly
 
+# 1.1.1.8 No FAT
+echo 'install vfat /bin/true' > /etc/modprobe.d/CIS.conf
+# 1.1.1.4 No hfs
+echo 'install hfs /bin/true' > /etc/modprobe.d/CIS.conf
+
+# 4.1.6 events that modify network are collected
+echo '-a always,exit -F arch=b64 -S sethostname -S setdomainname -k system-locale' >> /etc/audit/audit.rules
+echo '-a always,exit -F arch=b32 -S sethostname -S setdomainname -k system-locale' >> /etc/audit/audit.rules
+echo '-w /etc/issue -p wa -k system-locale' >> /etc/audit/audit.rules
+echo '-w /etc/issue.net -p wa -k system-locale' >> /etc/audit/audit.rules
+echo '-w /etc/hosts -p wa -k system-locale' >> /etc/audit/audit.rules
+echo '-w /etc/sysconfig/network -p wa -k system-locale' >> /etc/audit/audit.rules
+
 sed -i 's/\(tmpfs   defaults\)/\1,noexec/' /etc/fstab
 mount -o remount,noexec /dev/shm
 
+# 1.7.1.2 Informational message of the day issue
 grep -v 'Kernel \r on an \m' /etc/issue > /etc/issue.new
 mv /etc/issue.new /etc/issue
 echo 'Authorized uses only. All activity may be monitored and reported.' >> /etc/issue
