@@ -34,6 +34,10 @@ sysctl -w net.ipv4.route.flush=1
 # ------------------ SSH Section --------------------------
 # 5.2.5 set max auth tries to 4 or less
 sed -i 's/#MaxAuthTries 6/MaxAuthTries 4/' /etc/ssh/sshd_config
+# 5.2.6 sshd_config file IgnoreRhosts yes
+echo 'IgnoreRhosts yes' >> /etc/ssh/sshd_config
+# 5.2.10 PermitUserEnvironment
+sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment no/' /etc/ssh/sshd_config
 # 5.2.11 Approved MAC algo
 echo 'macs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com' >> /etc/ssh/sshd_config
 # 5.2.3 Log Level
@@ -79,6 +83,9 @@ chmod og-rwx /etc/cron.hourly
 # 5.1.3 Cron mode .d
 chown root:root /etc/cron.d
 chmod og-rwx /etc/cron.d
+# 5.1.4 Cron mode daily
+chown root:root /etc/cron.daily
+chmod og-rwx /etc/cron.daily
 
 # ------------------ File Systems --------------------------
 # 1.1.1.1 No cramfs
@@ -87,6 +94,8 @@ echo 'install cramfs /bin/true' > /etc/modprobe.d/CIS.conf
 echo 'install vfat /bin/true' >> /etc/modprobe.d/CIS.conf
 # 1.1.1.4 No hfs
 echo 'install hfs /bin/true' >> /etc/modprobe.d/CIS.conf
+# 1.1.1.3 No jffs2
+echo 'install jffs2 /bin/true' >> /etc/modprobe.d/CIS.conf
 
 # ------------------ Yum -------------------------
 # 1.2.3 gpg checks
