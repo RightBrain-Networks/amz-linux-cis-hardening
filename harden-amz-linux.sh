@@ -62,6 +62,14 @@ chmod og-rwx /etc/ssh/sshd_config
 # 5.2.5 set max auth tries to 4 or less
 sed -i 's/#MaxAuthTries 6/MaxAuthTries 4/' /etc/ssh/sshd_config
 
+# 5.2.6 sshd_config file IgnoreRhosts yes
+echo 'IgnoreRhosts yes' >> /etc/ssh/sshd_config
+# 5.2.10 PermitUserEnvironment
+sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment no/' /etc/ssh/sshd_config
+
+# 5.2.4
+sed -i 's/#ForwardX11 no/ForwardX11 no/' /etc/ssh/sshd_config
+
 # 5.2.7 disable hostbased auth
 sed -i 's/#\(HostbasedAuthentication no\)/\1/' /etc/ssh/sshd_config
 
@@ -202,6 +210,10 @@ echo '-a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftrun
 echo '-a always,exit -F arch=b64 -S mount -F auid>=500 -F auid!=4294967295 -k mounts' >> /etc/audit/audit.rules
 echo '-a always,exit -F arch=b32 -S mount -F auid>=500 -F auid!=4294967295 -k mounts' >> /etc/audit/audit.rules
 
+
+# 4.1.14
+echo '-a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -F auid>=500 -F auid!=4294967295 -k delete' >> /etc/audit/audit.rules
+
 # 4.1.15 changes to system admin scope are collected
 echo '-w /etc/sudoers -p wa -k scope' >> /etc/audit/audit.rules
 echo '-w /etc/sudoers.d/ -p wa -k scope' >> /etc/audit/audit.rules
@@ -238,6 +250,11 @@ chmod og-rwx /etc/cron.hourly
 # 5.1.4 Cron mode .d
 chown root:root /etc/cron.d
 chmod og-rwx /etc/cron.d
+
+# 5.1.4 Cron mode daily
+chown root:root /etc/cron.daily
+chmod og-rwx /etc/cron.daily
+
 # 5.1.5 Cron mode .weekly
 chown root:root /etc/cron.weekly
 chmod og-rwx /etc/cron.weekly
@@ -266,6 +283,12 @@ sed -i 's/\(OPTIONS="-g\)\("\)/\1 -u ntp:ntp\2/' /etc/sysconfig/ntpd
 echo 'install cramfs /bin/true' > /etc/modprobe.d/CIS.conf
 # 1.1.1.4 No hfs
 echo 'install hfs /bin/true' >> /etc/modprobe.d/CIS.conf
+
+
+# 1.1.1.3 No jffs2
+echo 'install jffs2 /bin/true' >> /etc/modprobe.d/CIS.conf
+
+
 # 1.1.1.5 No hfsplus
 echo 'install hfsplus /bin/true' >> /etc/modprobe.d/CIS.conf
 # 1.1.1.6 No squashfs
@@ -281,6 +304,7 @@ crontab -u root -e Add the following line to the crontab: 0 5 * * * /usr/sbin/ai
 # 2.2.7 NFS and RPC
 chkconfig nfs off
 chkconfig rpcbind off
+
 
 # ------------------ Yum -------------------------
 # 1.2.3 gpg checks
