@@ -301,6 +301,9 @@ echo 'install vfat /bin/true' >> /etc/modprobe.d/CIS.conf
 # 1.3.2 filesystem integrity is regularly checked
 crontab -u root -e Add the following line to the crontab: 0 5 * * * /usr/sbin/aide --check
 
+# 1.4.3 No interactive boot
+sed -i 's/PROMPT=yes/PROMPT=no/' /etc/sysconfig/init
+
 # 2.2.7 NFS and RPC
 chkconfig nfs off
 chkconfig rpcbind off
