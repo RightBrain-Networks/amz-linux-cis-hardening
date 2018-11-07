@@ -83,8 +83,8 @@ sed -i 's/#\(PermitEmptyPasswords no\)/\1/' /etc/ssh/sshd_config
 echo 'macs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com' >> /etc/ssh/sshd_config
 
 # 5.2.12 Idle timeout
-sed -i 's/#\(ClientAliveInterval\) 0/\1 300' /etc/ssh/sshd_config
-sed -i 's/#\(ClientAliveCountMax\) 3/\1 0' /etc/ssh/sshd_config
+sed -i 's/#\(ClientAliveInterval\) 0/\1 300/' /etc/ssh/sshd_config
+sed -i 's/#\(ClientAliveCountMax\) 3/\1 0/' /etc/ssh/sshd_config
 
 # 5.2.14 Only allow Certain users to login via ssh
 echo 'AllowUsers ec2-user' >> /etc/ssh/sshd_config
@@ -237,7 +237,7 @@ echo "-e 2" >> /etc/audit/audit.rules
 /etc/init.d/auditd reload
 
 # 4.1.3 Grub audit before auditd
-sed -i 's/$\(kernel.*\)/\1 audit=1/' /boot/grub/menu.lst
+sed -i 's/\(kernel.*\)/\1 audit=1/' /boot/grub/menu.lst
 
 # 1.4.1 Grub permissions
 chown root:root /boot/grub/menu.lst 
@@ -302,7 +302,10 @@ echo 'install udf /bin/true' >> /etc/modprobe.d/CIS.conf
 echo 'install vfat /bin/true' >> /etc/modprobe.d/CIS.conf
 
 # 1.3.2 filesystem integrity is regularly checked
-crontab -u root -e Add the following line to the crontab: 0 5 * * * /usr/sbin/aide --check
+(crontab -l ; echo "0 5 * * * /usr/sbin/aide") | crontab -
+
+# 1.4.3 No interactive boot
+sed -i 's/PROMPT=yes/PROMPT=no/' /etc/sysconfig/init
 
 # 2.2.7 NFS and RPC
 chkconfig nfs off
@@ -336,8 +339,8 @@ mount -o remount,noexec,nodev,nosuid /dev/shm
 # 1.7.1.2 Informational message of the day issue
 grep -v 'Kernel \r on an \m' /etc/issue > /etc/issue.new
 mv /etc/issue.new /etc/issue
-cp /etc/issue /etc/issue.net
 echo 'Authorized uses only. All activity may be monitored and reported.' >> /etc/issue
+cp /etc/issue /etc/issue.net
 
 # 3.4.3 etc hosts deny 
 echo "ALL: ALL" >> /etc/hosts.deny
