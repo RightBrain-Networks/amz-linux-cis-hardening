@@ -234,7 +234,7 @@ echo "-e 2" >> /etc/audit/audit.rules
 /etc/init.d/auditd reload
 
 # 4.1.3 Grub audit before auditd
-sed -i 's/$\(kernel.*\)/\1 audit=1/' /boot/grub/menu.lst
+sed -i 's/\(kernel.*\)/\1 audit=1/' /boot/grub/menu.lst
 
 # 1.4.1 Grub permissions
 chown root:root /boot/grub/menu.lst 
