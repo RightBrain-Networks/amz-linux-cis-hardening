@@ -336,8 +336,8 @@ mount -o remount,noexec,nodev,nosuid /dev/shm
 # 1.7.1.2 Informational message of the day issue
 grep -v 'Kernel \r on an \m' /etc/issue > /etc/issue.new
 mv /etc/issue.new /etc/issue
-cp /etc/issue /etc/issue.net
 echo 'Authorized uses only. All activity may be monitored and reported.' >> /etc/issue
+cp /etc/issue /etc/issue.net
 
 # 3.4.3 etc hosts deny 
 echo "ALL: ALL" >> /etc/hosts.deny
