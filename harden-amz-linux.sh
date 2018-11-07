@@ -299,7 +299,7 @@ echo 'install udf /bin/true' >> /etc/modprobe.d/CIS.conf
 echo 'install vfat /bin/true' >> /etc/modprobe.d/CIS.conf
 
 # 1.3.2 filesystem integrity is regularly checked
-crontab -u root -e Add the following line to the crontab: 0 5 * * * /usr/sbin/aide --check
+(crontab -l ; echo "0 5 * * * /usr/sbin/aide") | crontab -
 
 # 1.4.3 No interactive boot
 sed -i 's/PROMPT=yes/PROMPT=no/' /etc/sysconfig/init
