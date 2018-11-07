@@ -52,7 +52,10 @@ sysctl -w net.ipv4.route.flush=1
 
 # 3.2.7 Reverse Path Filtering is enabled
 echo "net.ipv4.conf.all.rp_filter = 1" >> /etc/sysctl.conf
-
+echo "net.ipv4.conf.default.rp_filter = 1" >> /etc/sysctl.conf
+sysctl -w net.ipv4.conf.all.rp_filter=1
+sysctl -w net.ipv4.conf.default.rp_filter=1
+sysctl -w net.ipv4.route.flush=1
 
 # ------------------ SSH Section --------------------------
 # 5.2.1 mod sshconfig
