@@ -80,8 +80,8 @@ sed -i 's/#\(PermitEmptyPasswords no\)/\1/' /etc/ssh/sshd_config
 echo 'macs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com' >> /etc/ssh/sshd_config
 
 # 5.2.12 Idle timeout
-sed -i 's/#\(ClientAliveInterval\) 0/\1 300' /etc/ssh/sshd_config
-sed -i 's/#\(ClientAliveCountMax\) 3/\1 0' /etc/ssh/sshd_config
+sed -i 's/#\(ClientAliveInterval\) 0/\1 300/' /etc/ssh/sshd_config
+sed -i 's/#\(ClientAliveCountMax\) 3/\1 0/' /etc/ssh/sshd_config
 
 # 5.2.14 Only allow Certain users to login via ssh
 echo 'AllowUsers ec2-user' >> /etc/ssh/sshd_config
