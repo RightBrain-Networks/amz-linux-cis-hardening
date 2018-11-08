@@ -7,51 +7,51 @@ function usage()
 {
   echo "ERROR: Incorrect arguments provided."
   echo "Usage: $0 {args}"
-  echo "Where valid args are: "
-  echo "  -- nossh | Ignore ssh section"
-  echo "  -- nopassword | Ignore password section"
-  echo "  -- noaudit | Ignore audit section"
-  echo "  -- nonfs | Ignore NFS section"
-  echo "  -- noxwindows | Ignores X Windows" 
+  echo "Where valid args are:"
+  echo "-- nossh | Ignore ssh section"
+  echo "-- nopassword | Ignore password section"
+  echo "-- noaudit | Ignore audit section"
+  echo "-- nonfs | Ignore NFS section"
+  echo "-- noxwindows | Ignores X Windows" 
   exit 1
 }
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
-key="$1"
-SSH=true
-PASSWORD=true
-AUDIT=true
-NFS=true
-XWINDOWS=true
+  key="$1"
+  SSH=true
+  PASSWORD=true
+  AUDIT=true
+  NFS=true
+  XWINDOWS=true
 
-case $key in
-    --nossh)
-    SSH=false
-    shift # past argument
-    ;;
-    --nopassword)
-    PASSWORD=false
-    shift # past argument
-    ;;
-    --noaudit)
-    AUDIT=false
-    shift # past argument
-    ;;
-    --nonfs)
-    NFS=false
-    shift # past argument
-    ;;
-    --noxwindows)
-    XWINDOWS=false
-    shift # past argument
-    ;;
-    *)    # unknown option
-    POSITIONAL+=("$1") # save it in an array for later
-    shift # past argument
-    ;;
-esac
+  case $key in
+      --nossh)
+      SSH=false
+      shift # past argument
+      ;;
+      --nopassword)
+      PASSWORD=false
+      shift # past argument
+      ;;
+      --noaudit)
+      AUDIT=false
+      shift # past argument
+      ;;
+      --nonfs)
+      NFS=false
+      shift # past argument
+      ;;
+      --noxwindows)
+      XWINDOWS=false
+      shift # past argument
+      ;;
+      *)    # unknown option
+      POSITIONAL+=("$1") # save it in an array for later
+      shift # past argument
+      ;;
+  esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
