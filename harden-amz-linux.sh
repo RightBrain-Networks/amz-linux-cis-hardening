@@ -8,11 +8,11 @@ function usage()
   echo "ERROR: Incorrect arguments provided."
   echo "Usage: $0 {args}"
   echo "Where valid args are:"
-  echo "-- nossh | Ignore ssh section"
-  echo "-- nopassword | Ignore password section"
-  echo "-- noaudit | Ignore audit section"
-  echo "-- nonfs | Ignore NFS section"
-  echo "-- noxwindows | Ignores X Windows" 
+  echo "  --nossh | Ignore ssh section"
+  echo "  --nopassword | Ignore password section"
+  echo "  --noaudit | Ignore audit section"
+  echo "  --nonfs | Ignore NFS section"
+  echo "  --noxwindows | Ignores X Windows" 
   exit 1
 }
 
