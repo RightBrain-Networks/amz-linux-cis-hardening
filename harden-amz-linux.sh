@@ -1,8 +1,65 @@
 #!/bin/bash
+(
+set -xe #Exit on non-zero return and print commands & argruments
+
+# Set variables
+function usage()
+{
+  echo "ERROR: Incorrect arguments provided."
+  echo "Usage: $0 {args}"
+  echo "Where valid args are:"
+  echo "  --nossh | Ignore ssh section"
+  echo "  --nopassword | Ignore password section"
+  echo "  --noaudit | Ignore audit section"
+  echo "  --nonfs | Ignore NFS section"
+  echo "  --noxwindows | Ignores X Windows" 
+  exit 1
+}
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+  key="$1"
+  SSH=true
+  PASSWORD=true
+  AUDIT=true
+  NFS=true
+  XWINDOWS=true
+
+  case $key in
+      --nossh)
+      SSH=false
+      shift # past argument
+      ;;
+      --nopassword)
+      PASSWORD=false
+      shift # past argument
+      ;;
+      --noaudit)
+      AUDIT=false
+      shift # past argument
+      ;;
+      --nonfs)
+      NFS=false
+      shift # past argument
+      ;;
+      --noxwindows)
+      XWINDOWS=false
+      shift # past argument
+      ;;
+      *)    # unknown option
+      POSITIONAL+=("$1") # save it in an array for later
+      shift # past argument
+      ;;
+  esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
 
 yum update -y --security
 
 # ----------------- Kernel Section --------------------
+echo '----------------- Kernel Section --------------------'
 # 1.5.1 core dumps restricted
 echo '* hard core 0' > /etc/security/limits.d/coredumpsrestricted
 echo 'fs.suid_dumpable = 0' >> /etc/sysctl.conf
@@ -58,6 +115,9 @@ sysctl -w net.ipv4.conf.default.rp_filter=1
 sysctl -w net.ipv4.route.flush=1
 
 # ------------------ SSH Section --------------------------
+if [ $SSH ]
+then
+echo '------------------ SSH Section --------------------------'
 # 5.2.1 mod sshconfig
 chown root:root /etc/ssh/sshd_config
 chmod og-rwx /etc/ssh/sshd_config
@@ -118,8 +178,12 @@ echo -e "TMOUT=600\nreadonly TMOUT\nexport TMOUT" >> /etc/bashrc
 # 5.5 su command is restricted
 sed -i 's/#\(auth.*required.*pam_wheel.so use_uid\)/\1/' /etc/pam.d/su
 sed -i 's/\(wheel:x:10:ec2-user\)/\1,root/' /etc/group
+fi
 
 # ------------------ Password Settings ---------------------
+if [ $PASSWORD ]
+then
+echo '------------------ Password Settings ---------------------'
 # 5.3.2 Lockout after failed password attempts
 echo 'auth required pam_faillock.so preauth audit silent deny=5 unlock_time=900' >> /etc/pam.d/password-auth-ac
 echo 'auth [success=1 default=bad] pam_unix.so' >> /etc/pam.d/password-auth-ac
@@ -150,10 +214,12 @@ sed -i 's/\(PASS_MAX_DAYS\)   99999/\1 90/' /etc/login.defs
 useradd -D -f 30
 # 5.4.1.2 Min days between password changes
 sed -i 's/\(PASS_MIN_DAYS  \) 0/\1 7/' /etc/login.defs
-
-
+fi
 
 # ------------------ Audit Daemon Config --------------------
+if [ $AUDIT ]
+then
+echo '------------------ Audit Daemon Config --------------------'
 # 4.1.1.2 audit config
 sed -i 's/space_left_action = SYSLOG/space_left_action = email/' /etc/audit/auditd.conf
 sed -i 's/action_mail_acct = root/action_mail_acct = support@rightbrainnetworks.com/' /etc/audit/auditd.conf
@@ -242,8 +308,10 @@ sed -i 's/\(kernel.*\)/\1 audit=1/' /boot/grub/menu.lst
 # 1.4.1 Grub permissions
 chown root:root /boot/grub/menu.lst 
 chmod og-rwx /boot/grub/menu.lst
+fi
 
 # ------------------ Cron Modes ---------------------------
+echo '------------------ Cron Modes ---------------------------'
 # 5.1.2 Crontab
 chown root:root /etc/crontab
 chmod og-rwx /etc/crontab
@@ -276,12 +344,14 @@ chown root:root /etc/cron.allow
 chown root:root /etc/at.allow
 
 # ------------------ NTP and basic Services ----------------
+echo '------------------ NTP and basic Services ----------------'
 # 2.2.1.2 NTP
 echo 'restrict -4 default kod nomodify notrap nopeer noquery' >> /etc/ntp.conf
 echo 'restrict -6 default kod nomodify notrap nopeer noquery' >> /etc/ntp.conf
 sed -i 's/\(OPTIONS="-g\)\("\)/\1 -u ntp:ntp\2/' /etc/sysconfig/ntpd
 
 # ------------------ File Systems --------------------------
+echo '------------------ File Systems --------------------------'
 # 1.1.1.1 No cramfs
 echo 'install cramfs /bin/true' > /etc/modprobe.d/CIS.conf
 # 1.1.1.4 No hfs
@@ -308,15 +378,20 @@ echo 'install vfat /bin/true' >> /etc/modprobe.d/CIS.conf
 sed -i 's/PROMPT=yes/PROMPT=no/' /etc/sysconfig/init
 
 # 2.2.7 NFS and RPC
+if [ $NFS ]
+then
 chkconfig nfs off
+fi
 chkconfig rpcbind off
 
 
 # ------------------ Yum -------------------------
+echo '------------------ Yum -------------------------'
 # 1.2.3 gpg checks
 sed -i 's/gpgcheck=0/gpgcheck=1/' /etc/yum.repos.d/amzn-nosrc.repo
 
 # ------------------ Logs ------------------------
+echo '------------------ Logs ------------------------'
 find /var/log -type f -exec chmod g-wx,o-rwx {} +
 
 # 4.2.1.3 rsyslog file perms
@@ -327,8 +402,11 @@ yum install -y aide
 aide --init
 mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
 
+if [ $XWINDOWS ]
+then
 # 2.2.2 No X windows
 yum remove -y xorg-x11*
+fi
 
 # 1.1.15 nodev option
 # 1.1.14 noexec option
@@ -339,6 +417,9 @@ mount -o remount,noexec,nodev,nosuid /dev/shm
 # 1.7.1.2 Informational message of the day issue
 grep -v 'Kernel \r on an \m' /etc/issue > /etc/issue.new
 mv /etc/issue.new /etc/issue
+
+
+##ADD OVERRIDE
 echo 'Authorized uses only. All activity may be monitored and reported.' >> /etc/issue
 cp /etc/issue /etc/issue.net
 
@@ -347,3 +428,4 @@ echo "ALL: ALL" >> /etc/hosts.deny
 
 # 1.4.2 Auth needed for single user mode
 sed -i 's/\(SINGLE=\/sbin\/\)sushell/\1\sulogin/' /etc/sysconfig/init
+) 2> "harden-amz-linux.log"
