@@ -340,7 +340,7 @@ chmod og-rwx /etc/cron.monthly
 
 # 5.1.8 atcron for authorized only
 rm /etc/cron.deny
-if [ $RHEL ] ; then rm /etc/at.deny; fi
+if [ ! $RHEL ] ; then rm /etc/at.deny; fi
 touch /etc/cron.allow
 touch /etc/at.allow
 chmod og-rwx /etc/cron.allow
@@ -393,7 +393,10 @@ chkconfig rpcbind off
 # ------------------ Yum -------------------------
 echo '------------------ Yum -------------------------'
 # 1.2.3 gpg checks
+if [ ! $RHEL ];
+then
 sed -i 's/gpgcheck=0/gpgcheck=1/' /etc/yum.repos.d/amzn-nosrc.repo
+fi
 
 # ------------------ Logs ------------------------
 echo '------------------ Logs ------------------------'
