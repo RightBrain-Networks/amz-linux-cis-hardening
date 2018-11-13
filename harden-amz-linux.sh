@@ -13,6 +13,7 @@ function usage()
   echo "  --noaudit | Ignore audit section"
   echo "  --nonfs | Ignore NFS section"
   echo "  --noxwindows | Ignores X Windows" 
+  echo "  --rhel | skip things that dont work in rhel" 
   exit 1
 }
 
@@ -45,6 +46,10 @@ do
       ;;
       --noxwindows)
       XWINDOWS=false
+      shift # past argument
+      ;;
+      --rhel)
+      RHEL=true
       shift # past argument
       ;;
       *)    # unknown option
@@ -335,7 +340,7 @@ chmod og-rwx /etc/cron.monthly
 
 # 5.1.8 atcron for authorized only
 rm /etc/cron.deny
-rm /etc/at.deny
+if [ $RHEL ] ; then rm /etc/at.deny; fi
 touch /etc/cron.allow
 touch /etc/at.allow
 chmod og-rwx /etc/cron.allow
