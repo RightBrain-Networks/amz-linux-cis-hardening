@@ -26,6 +26,7 @@ do
   AUDIT=true
   NFS=true
   XWINDOWS=true
+  RHEL=false
 
   case $key in
       --nossh)
