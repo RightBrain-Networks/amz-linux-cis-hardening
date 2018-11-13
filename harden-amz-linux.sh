@@ -384,11 +384,11 @@ echo 'install vfat /bin/true' >> /etc/modprobe.d/CIS.conf
 sed -i 's/PROMPT=yes/PROMPT=no/' /etc/sysconfig/init
 
 # 2.2.7 NFS and RPC
-if [ $NFS ]
+if [[ $NFS && ! $RHEL ]]
 then
 chkconfig nfs off
-fi
 chkconfig rpcbind off
+fi
 
 
 # ------------------ Yum -------------------------
